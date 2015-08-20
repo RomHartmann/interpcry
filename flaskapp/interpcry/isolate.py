@@ -1,4 +1,4 @@
-def isolate_cries(sDir, iResample = 8000, bSave = False, sCutDir=None, iSigmaSecs=0.05):
+def isolate_cries(sDir, iResample = 8000, iSigmaSecs=0.05):
     """
     expected peak corrolation by convolution, then edge detection
     iResample = 8000 Hz resampling rate
@@ -84,19 +84,11 @@ def isolate_cries(sDir, iResample = 8000, bSave = False, sCutDir=None, iSigmaSec
     laAudios = []
     laCorrs = []
     
-    ###TODO remove
-    #lKeep = []
-    #lThrow = []
-    #lStart = []
     
     while iMin < len(lMinimaIndecesFilt):
         iStart = lMinimaIndecesFilt[iMin -1]
         iEnd = lMinimaIndecesFilt[iMin]
         
-        ###TODO remove
-        #iMean = iStart + (iEnd-iStart)/2
-        #iMeanTime = iMean/iSampleRate
-        #lStart.append(iStart/iSampleRate)
 
         aAudioCut = np.array(aAudio[iStart : iEnd])
         aCorrAudioCut = np.array(aCorr[iStart : iEnd])
@@ -111,63 +103,14 @@ def isolate_cries(sDir, iResample = 8000, bSave = False, sCutDir=None, iSigmaSec
         
         #throw away sections with max amplitude less than max/iThreshKeepFact
         if bKeep:
-            if bSave:
-                sDirCutNum = '{0}/cut{1}.wav'.format(sCutDir, iCut)
-                from scipy.io.wavfile import write
-                write(sDirCutNum, iSampleRate, aOrigAudioCut)
-            
             laAudios.append(aAudioCut)
             laCorrs.append(aCorrAudioCut)
             
-            
             iCut += 1
-            
-            
-            ###TODO remove
-            #lKeep.append(iMeanTime)
-        #else:
-            #lThrow.append(iMeanTime)
-        
         
         iMin += 1
     
     
-    #def normalize(aArray):
-        #iMax = np.max(aArray)
-        #return [i/iMax for i in aArray]
-
-    
-    #iMax = np.max(aCorr)
-    #iMax = 1.0
-    #aCorr = normalize(aCorr)
-    ##aAudio = normalize(aAudio)
-    ##aFirstDeriv = normalize(aFirstDeriv)
-    ##aSecondDeriv = normalize(aSecondDeriv)
-    ##aOrigAudio = normalize(aOrigAudio)
-
-
-    #import matplotlib.pyplot as plt
-    #plt.plot(aTime, aCorr, 'r')
-    
-    
-    
-    #plt.subplot(2,1,1)
-    #plt.plot(aTime, aCorr, 'b')
-    #plt.plot(lKeep, [iMax/3 for i in range(len(lKeep))], 'g^')
-    #plt.plot(lThrow, [iMax/3 for i in range(len(lThrow))], 'rx')
-    #plt.plot(lStart, [iMax/50 for i in range(len(lStart))], 'yo')
-    
-    
-    #plt.subplot(2,1,2)
-    #plt.title('Green: Orig, Blue:  1st, Red:  2nd')
-    #plt.plot(aTime, aCorr, 'g')
-    #plt.plot(aTime, aFirstDeriv, 'bx')
-    #plt.plot(aTime, aSecondDeriv, 'r')
-    #plt.plot(lKeep, [0 for i in range(len(lKeep))], 'g^')
-    #plt.plot(lThrow, [0 for i in range(len(lThrow))], 'rx')
-    #plt.plot(lStart, [0 for i in range(len(lStart))], 'yo')
-
-    #plt.show()
     
     return iSampleRate, laAudios, laCorrs
 

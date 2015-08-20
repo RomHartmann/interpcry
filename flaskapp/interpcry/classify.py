@@ -1,7 +1,7 @@
-def classify_cry(xRec):
+def classify_cry(dRec):
     """
     compare a cry to all pre-identified cries
-    xRec is either path string or dictionary of form:
+    dictionary of form:
         dInput = {
             'iSampleRate': iSampleRate,
             'aTime': aTime,
@@ -13,28 +13,27 @@ def classify_cry(xRec):
     import analyse
     import os
     
-    iSelfCorrArea = analyse.analyse_cry(xRec, xRec)[1]
+    iSelfCorrArea = analyse.analyse_cry(dRec, dRec)[1]
     
     lsCryNames = []
     liCryValues = []
     
     dCries = {}
     
-    import common_fxns
-    dConfig = common_fxns.parse_config('paths.ini')
-    sCryDir = dConfig['paths']['db_dir']
-    lsCryTypes = os.listdir(sCryDir)
+    
+    sCryDBDir = os.getcwd() + '/DB_cries'
+    lsCryTypes = os.listdir(sCryDBDir)
     
     for sCryType in lsCryTypes:
-        sCutDir = '{0}/{1}'.format(sCryDir, sCryType)
+        sCutDir = '{0}/{1}'.format(sCryDBDir, sCryType)
         
         for sCut in os.listdir(sCutDir):
-            sDBDir = '{0}/{1}/{2}'.format(sCryDir, sCryType, sCut)
+            sDBDir = '{0}/{1}/{2}'.format(sCryDBDir, sCryType, sCut)
             
-            iMisfit, iCorrArea = analyse.analyse_cry(xRec, sDBDir)
+            iMisfit, iCorrArea = analyse.analyse_cry(dRec, sDBDir)
             
             iDeltaArea = abs(iCorrArea - iSelfCorrArea)
-            iComparisonMetric = iMisfit * iDeltaArea
+            iComparisonMetric = iMisfit * iDeltaArea    #TODO test accuracy of using one, the other, both as metrics
             
             lsCryNames.append(sCryType)
             liCryValues.append(iComparisonMetric)
@@ -58,7 +57,7 @@ def classify_cry(xRec):
     lsAllTopsSortedNames = [x for (y,x) in sorted(zip(dCries.values(), dCries.keys()))]
     liAllTopsSortedValues = [round(y,2) for (y,x) in sorted(zip(dCries.values(), dCries.keys()))]
     
-    
+    import common_fxns
     liConfidence = common_fxns.get_confidence(liAllTopsSortedValues)
     
     #aggregated and sorted results based on all comparisons, with normalized confidence results

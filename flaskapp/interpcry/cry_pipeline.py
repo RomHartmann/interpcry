@@ -1,13 +1,13 @@
-def interp_cry(sInput, iResample):
-    """do entire process for one audio file"""
+def interp_cry(sInput, iResample=8000):
+    """
+    do entire process for one audio file
+    TODO real life test algorithm in classify.classify_cry
+    """
     
-    sType = sInput.split('-')[0].split('/')[-1]
-
     #edge detection on the recording, isolate the cry(s)
-    #either save result to disk or return results
     import isolate
     iSampleRate, laAudios, laCorrs = isolate.isolate_cries(sInput, iResample=iResample)
-
+    
     dAggregatedCries = {}
     
     #run returned samples against database

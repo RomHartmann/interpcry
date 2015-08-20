@@ -105,18 +105,6 @@ def downsample(aSignal, iOldRate, iNewRate):
 
 
 
-def parse_config(sFileName):
-    """
-    parse .ini file and return dictionary
-    """
-    import ConfigParser
-    oConfig = ConfigParser.ConfigParser()
-    oConfig.read(sFileName)
-    dConfig = oConfig.__dict__['_sections'].copy()
-    
-    return dConfig
-
-
 
 
 
@@ -138,7 +126,16 @@ def get_confidence(lValues):
 
 
 
-
+def parse_config(sFileName):
+    """
+    parse .ini file and return dictionary
+    """
+    import ConfigParser
+    oConfig = ConfigParser.ConfigParser()
+    oConfig.read(sFileName)
+    dConfig = oConfig.__dict__['_sections'].copy()
+    
+    return dConfig
 
 
 

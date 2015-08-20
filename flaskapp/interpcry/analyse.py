@@ -1,19 +1,18 @@
-def analyse_cry(xRec, xDB):
+def analyse_cry(dRec, xDB):
     """
-    inputs must either be path string or dictionary of form:
+    dRec must be dictionary of form:
     dInput = {
             'iSampleRate': iSampleRate,
             'aTime': aTime,
             'aAudio': aAudio,
             'aCorr': aCorr
         }
+    xDB can be string for filename, or dictionary of above form
+    
     Correlation and least squares comparison between audio files
     classifications based on classifications by Pricilla Dunstan
     """
     import numpy as np
-    from scipy import signal
-    
-    import common_fxns
     
     def normalize(aArray):
         iMax = np.max(aArray)
@@ -40,26 +39,14 @@ def analyse_cry(xRec, xDB):
         return float(format(iNum, '.{0}g'.format(iSigs)))
     
     
-    if type(xRec) == str:
-        sRecDir = xRec
-        (iRecSampleRate, 
-            aRecTime_NoShift, 
-            aRecAudio, 
-            aRecCorr_NoShift) = common_fxns.process_dir(sRecDir)[0:4]
-        
-    elif type(xRec) == dict:
-        iRecSampleRate = xRec['iSampleRate']
-        aRecTime_NoShift = xRec['aTime']
-        aRecAudio = xRec['aAudio']
-        aRecCorr_NoShift = xRec['aCorr']
-        
-    else:
-        raise ValueError('Please enter a string or dict of the correct format')
-    
-    
+    iRecSampleRate = dRec['iSampleRate']
+    aRecTime_NoShift = dRec['aTime']
+    aRecAudio = dRec['aAudio']
+    aRecCorr_NoShift = dRec['aCorr']
     
     
     if type(xDB) == str:
+        import common_fxns
         sDBDir = xDB
         (iDBSampleRate, 
             aDBTime_NoShift, 
@@ -74,8 +61,6 @@ def analyse_cry(xRec, xDB):
         
     else:
         raise ValueError('Please enter a string or dict of the correct format')
-    
-    
     
     
     
@@ -116,11 +101,20 @@ def analyse_cry(xRec, xDB):
         aRec = aRecCorr_NoShift
         aRecTime = aRecTime_NoShift
     
-    
-    
     #correlation between 2 signals
-    aCorr = np.correlate(aRec, aDB, 'same')
-    aCorrTime = aRecTime if len(aRecTime) > len(aDBTime) else aDBTime
+    #order matters for the calculations to get iCorrArea
+    bRecLonger = len(aRecTime) > len(aDBTime)
+    
+    #the fftconvolve needs the longer array to be placed first, time needs to be the longer one
+    aCorrTime = aRecTime if bRecLonger else aDBTime
+    
+    aLonger = aRec if bRecLonger else aDB
+    aShorter = aDB if bRecLonger else aRec
+    
+    #np.correlate(aRec, aDB, 'same') takes too long, fftconvolve is faster with near identical results
+    from scipy import signal
+    aCorr = signal.fftconvolve(aLonger, aShorter, mode='same') 
+    
     
     #least squares comparison to get misfit
     iMisfit = calc_misfit(aRec, aDB)
