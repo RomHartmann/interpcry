@@ -11,7 +11,7 @@ def upload():
         fFile = request.files['file']
         
         from datetime import datetime as dt
-        sFilename = str(dt.now())
+        sFilename = str(dt.now())+".wav"
         
         sPath = os.path.join(os.getcwd(), "app/uploads", sFilename)
         
