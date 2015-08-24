@@ -3,6 +3,12 @@ from app import app
 import os
 
 
+@app.route('/')
+def home():
+    return redirect(url_for('upload'))
+
+
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
