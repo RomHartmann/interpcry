@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Analysis Results</title>
+    </head>
+    
+    
+    <body>
+        <table>
+            {% for dRet in ldRet %}
+                <tr>
+                    <td>{{dRet.sCry}}</td>
+                    <td>{{dRet.sConfidence}}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        
+        <br>
+        <br>
+        
+        <a href={{sUploadURL}}>
+            <button>Upload another</button>
+        </a>
+        
+        <br>
+        <br>
+        Time Taken for Calulation:  {{sTime}}
+    </body>
+</html>
+
+
